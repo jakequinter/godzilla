@@ -1,0 +1,29 @@
+{
+  "endOfLine": "lf",
+  "printWidth": 100,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "arrowParens": "avoid",
+  "plugins": ["@ianvs/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
+  "importOrder": [
+    "^(solid-js/(.*)$)|^(solid-js$)",
+    "^(solid-js/web(.*)$)|^(solid-js/web$)",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^@/types/(.*)$",
+    "^@/lib/(.*)$",
+    "^@/utils/(.*)$",
+    "",
+    "@/components/(.*)$",
+    "^[./]",
+    "",
+    "^@/styles/(.*)$"
+  ],
+  "importOrderSeparation": false,
+  "importOrderSortSpecifiers": true,
+  "importOrderBuiltinModulesToTop": true,
+  "importOrderParserPlugins": ["typescript", "jsx", "decorators-legacy"],
+  "importOrderMergeDuplicateImports": true,
+  "importOrderCombineTypeAndValueImports": true
+}
