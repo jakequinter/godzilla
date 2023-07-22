@@ -3,8 +3,8 @@ use crate::error::TauriError;
 use crate::models::{ApiResult, User, Url};
 
 #[tauri::command]
-pub fn myself(token: &str) -> ApiResult<User> {
-    let response = get_request(Url::WithBaseUrl("/myself"), token)?;
+pub fn myself(jira_instance: &str, token: &str) -> ApiResult<User> {
+    let response = get_request(Url::WithBaseUrl(jira_instance.to_string(), "/myself"),  token)?;
 
     if !response.starts_with("{") {
         let error = Err(TauriError {

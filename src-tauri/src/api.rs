@@ -15,6 +15,7 @@ pub fn get_request(url: Url, token: &str) -> ApiResult<String> {
     let url = url.value();
     let client = reqwest::blocking::Client::new();
     let response = client.get(url).headers(construct_headers(token)).send()?;
+
     let response_body = response.text()?;
 
     Ok(response_body)
