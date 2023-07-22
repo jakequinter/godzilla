@@ -3,13 +3,14 @@ import { createSignal, useContext } from 'solid-js';
 import { AuthContext } from '../context/AuthContext';
 
 export default function Login() {
+  const [jiraInstance, setJiraInstance] = createSignal('');
   const [email, setEmail] = createSignal('');
   const [token, setToken] = createSignal('');
   const [, { login }] = useContext(AuthContext);
 
   const handleSubmit = (e: Event) => {
     e.preventDefault();
-    login(email(), token());
+    login(jiraInstance(), email(), token());
   };
 
   return (
@@ -18,6 +19,28 @@ export default function Login() {
 
       <div class="mx-auto w-full max-w-sm">
         <form class="space-y-4" onsubmit={handleSubmit}>
+          <div>
+            <div class="flex items-center justify-between">
+              <label for="jiraInstance" class="text-sm font-medium text-gray-950">
+                JIRA organization
+              </label>
+            </div>
+            <div class="mt-0.5">
+              <input
+                id="jiraInstance"
+                name="jiraInstance"
+                type="text"
+                placeholder="whitespectre"
+                required
+                autofocus
+                autocomplete="off"
+                spellcheck={false}
+                class="transorm-none block w-full rounded-md border-0 py-2 shadow-sm ring-1 ring-inset ring-gray-500 placeholder:text-gray-600 hover:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-violet-700 sm:text-sm"
+                onChange={e => setJiraInstance(e.currentTarget.value)}
+              />
+            </div>
+          </div>
+
           <div>
             <label for="email" class="text-sm font-medium text-gray-950">
               JIRA account email
@@ -29,8 +52,9 @@ export default function Login() {
                 type="email"
                 placeholder="jake@mrryfield.com"
                 required
-                autofocus
-                class="block w-full rounded-md border-0 py-2 shadow-sm ring-1 ring-inset ring-gray-500 placeholder:text-gray-600 hover:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-violet-700 sm:text-sm"
+                autocomplete="off"
+                spellcheck={false}
+                class="transorm-none block w-full rounded-md border-0 py-2 shadow-sm ring-1 ring-inset ring-gray-500 placeholder:text-gray-600 hover:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-violet-700 sm:text-sm"
                 onChange={e => setEmail(e.currentTarget.value)}
               />
             </div>
@@ -49,6 +73,8 @@ export default function Login() {
                 type="password"
                 placeholder="gElzkvUaRmhcYIjOxWqS..."
                 required
+                autocomplete="off"
+                spellcheck={false}
                 class="block w-full rounded-md border-0 py-2 shadow-sm ring-1 ring-inset ring-gray-500 placeholder:text-gray-600 hover:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-violet-700 sm:text-sm"
                 onChange={e => setToken(e.currentTarget.value)}
               />

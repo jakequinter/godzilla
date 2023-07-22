@@ -14,14 +14,14 @@ pub struct User {
 }
 
 pub enum Url {
-    WithBaseUrl(&'static str),
+    WithBaseUrl(String, &'static str),
     WithParams(String),
 }
 
 impl Url {
     pub fn value(self) -> String {
         match self {
-            Url::WithBaseUrl(url) => format!("https://whitespectre.atlassian.net/rest/api/3{url}"),
+            Url::WithBaseUrl(jira_instance, path) => format!("https://{jira_instance}.atlassian.net/rest/api/3{path}"),
             Url::WithParams(url) => format!("https://whitespectre.atlassian.net/rest/api/3{}", url),
         }
     }

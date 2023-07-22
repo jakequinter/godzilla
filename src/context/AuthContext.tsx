@@ -7,21 +7,24 @@ import { User } from '../types/user';
 
 type AuthState = {
   token: string | null;
+  jiraInstance: string | null;
   user?: User;
 };
 
 type AuthActions = {
   setToken: (token: string) => void;
+  setJiraInstance: (jiraInstance: string) => void;
   setUser: (user: User) => void;
-  login: (email: string, apiKey: string) => void;
+  login: (jiraInstance: string, email: string, apiKey: string) => void;
 };
 
 type AuthContextValue = [AuthState, AuthActions];
 
 export const AuthContext = createContext<AuthContextValue>([
-  { token: '' },
+  { token: '', jiraInstance: '' },
   {
     setToken: () => {},
+    setJiraInstance: () => {},
     setUser: () => {},
     login: () => {},
   },
@@ -31,22 +34,25 @@ export function AuthProvider(props: { children: JSX.Element }) {
   const navigate = useNavigate();
   const [state, setState] = createStore<AuthState>({
     token: localStorage.getItem('token') || null,
+    jiraInstance: localStorage.getItem('jira-instance') || null,
   });
 
   createEffect(() => {
-    if (!state.token) {
-      navigate('/login');
+    if (!state.token || !state.jiraInstance) {
+      clearAuth();
       return;
     }
 
     navigate('/');
-  }, [state.token]);
+  }, [state.token, state.jiraInstance]);
 
   createEffect(() => {
     const handleCookieChange = () => {
-      const newToken = localStorage.getItem('token');
-      if (!newToken) {
-        navigate('/login');
+      const authToken = localStorage.getItem('token');
+      const authInstance = localStorage.getItem('jira-instance');
+
+      if (!authToken || !authInstance) {
+        clearAuth();
       }
     };
 
@@ -56,23 +62,37 @@ export function AuthProvider(props: { children: JSX.Element }) {
     });
   });
 
+  function clearAuth() {
+    setState('token', null);
+    setState('jiraInstance', null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('jira-instance');
+    navigate('/login');
+  }
+
   const user: AuthContextValue = [
     state,
     {
       setToken: (token: string) => {
         setState('token', token);
       },
+      setJiraInstance: (jiraInstance: string) => {
+        setState('jiraInstance', jiraInstance);
+      },
       setUser: (user: User) => {
         setState('user', user);
       },
-      login: async (email: string, apiKey: string) => {
+      login: async (jiraInstance: string, email: string, apiKey: string) => {
         const token = btoa(`${email}:${apiKey}`);
         try {
-          const data = await invoke<User>('myself', { token });
+          const data = await invoke<User>('myself', { jiraInstance, token });
+          setState('jiraInstance', jiraInstance);
           setState('token', token);
           setState('user', data);
           localStorage.setItem('token', token);
+          localStorage.setItem('jira-instance', jiraInstance);
         } catch (error) {
+          // TODO: show errors
           console.log('error', error);
         }
       },
