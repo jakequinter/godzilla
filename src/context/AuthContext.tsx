@@ -1,13 +1,18 @@
 import { createContext, createEffect, JSX, onCleanup } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { useNavigate } from '@solidjs/router';
+import { invoke } from '@tauri-apps/api/tauri';
+
+import { User } from '../types/user';
 
 type AuthState = {
   token: string | null;
+  user?: User;
 };
 
 type AuthActions = {
   setToken: (token: string) => void;
+  setUser: (user: User) => void;
   login: (email: string, apiKey: string) => void;
 };
 
@@ -17,6 +22,7 @@ export const AuthContext = createContext<AuthContextValue>([
   { token: '' },
   {
     setToken: () => {},
+    setUser: () => {},
     login: () => {},
   },
 ]);
@@ -56,10 +62,19 @@ export function AuthProvider(props: { children: JSX.Element }) {
       setToken: (token: string) => {
         setState('token', token);
       },
-      login: (email: string, apiKey: string) => {
+      setUser: (user: User) => {
+        setState('user', user);
+      },
+      login: async (email: string, apiKey: string) => {
         const token = btoa(`${email}:${apiKey}`);
-        setState('token', token);
-        localStorage.setItem('token', token);
+        try {
+          const data = await invoke<User>('myself', { token });
+          setState('token', token);
+          setState('user', data);
+          localStorage.setItem('token', token);
+        } catch (error) {
+          console.log('error', error);
+        }
       },
     },
   ];
