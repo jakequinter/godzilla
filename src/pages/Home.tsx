@@ -1,10 +1,12 @@
 import { A } from '@solidjs/router';
 
+import Container from '../components/Container';
+
 export default function Home() {
   return (
-    <div>
+    <Container>
       <h1 class="text-3xl font-semibold text-violet-600">Home</h1>
-      <A href="/login">go to login</A>
-    </div>
+      <A href="/about">go to about</A>
+    </Container>
   );
 }

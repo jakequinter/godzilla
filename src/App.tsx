@@ -1,4 +1,4 @@
-import { Route, Routes } from '@solidjs/router'; // 👈 Import the A component
+import { Route, Routes } from '@solidjs/router';
 
 import { AuthProvider } from './context/AuthContext';
 import About from './pages/About';
