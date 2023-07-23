@@ -35,7 +35,7 @@ export default function Login() {
                 autofocus
                 autocomplete="off"
                 spellcheck={false}
-                class="transorm-none block w-full rounded-md border-0 py-2 shadow-sm ring-1 ring-inset ring-gray-500 placeholder:text-gray-600 hover:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-violet-700 sm:text-sm"
+                class="transorm-none block w-full rounded-md border-0 py-2 shadow-sm ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 hover:ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-300 sm:text-sm"
                 onChange={e => setJiraInstance(e.currentTarget.value)}
               />
             </div>
@@ -54,7 +54,7 @@ export default function Login() {
                 required
                 autocomplete="off"
                 spellcheck={false}
-                class="transorm-none block w-full rounded-md border-0 py-2 shadow-sm ring-1 ring-inset ring-gray-500 placeholder:text-gray-600 hover:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-violet-700 sm:text-sm"
+                class="transorm-none block w-full rounded-md border-0 py-2 shadow-sm ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 hover:ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-300 sm:text-sm"
                 onChange={e => setEmail(e.currentTarget.value)}
               />
             </div>
@@ -75,7 +75,7 @@ export default function Login() {
                 required
                 autocomplete="off"
                 spellcheck={false}
-                class="block w-full rounded-md border-0 py-2 shadow-sm ring-1 ring-inset ring-gray-500 placeholder:text-gray-600 hover:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-violet-700 sm:text-sm"
+                class="transorm-none block w-full rounded-md border-0 py-2 shadow-sm ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 hover:ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-300 sm:text-sm"
                 onChange={e => setToken(e.currentTarget.value)}
               />
             </div>
@@ -84,7 +84,7 @@ export default function Login() {
           <div>
             <button
               type="submit"
-              class="mt-8 flex w-full justify-center rounded-md bg-violet-700 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-violet-600"
+              class="mt-8 flex w-full justify-center rounded-md bg-violet-700 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-violet-400"
             >
               Sign in
             </button>
