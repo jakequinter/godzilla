@@ -4,14 +4,16 @@ use crate::error::TauriError;
 pub type ApiResult<T, E = TauriError> = Result<T, E>;
 
 pub enum Url {
-    WithBaseUrl(String, &'static str),
+    JiraCoreUrl(String, &'static str),
+    JiraAgileUrl(String, &'static str),
     WithParams(String),
 }
 
 impl Url {
     pub fn value(self) -> String {
         match self {
-            Url::WithBaseUrl(jira_instance, path) => format!("https://{jira_instance}.atlassian.net/rest/api/3{path}"),
+            Url::JiraCoreUrl(jira_instance, path) => format!("https://{jira_instance}.atlassian.net/rest/api/3{path}"),
+            Url::JiraAgileUrl(jira_instance, path) => format!("https://{jira_instance}.atlassian.net/rest/agile/1.0{path}"),
             Url::WithParams(url) => format!("https://whitespectre.atlassian.net/rest/api/3{}", url),
         }
     }
@@ -36,10 +38,13 @@ pub struct AvatarUrl {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Project {
-    id: String,
-    key: String,
-    name: String,
-    #[serde(rename = "avatarUrls")]
-    avatar_url: AvatarUrl,
+pub struct Board {
+    values: Vec<BoardValue>,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+struct BoardValue {
+    id: u32,
+    name: String,
+}
+
