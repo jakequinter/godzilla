@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@solidjs/router": "^0.8.2",
+    "@tanstack/solid-query": "^4.32.0",
     "@tauri-apps/api": "^1.4.0",
     "clsx": "^2.0.0",
     "phosphor-solid": "^1.1.5",
