@@ -5,7 +5,7 @@ import Home from 'pages/Home';
 import Login from 'pages/Login';
 
 import { AuthProvider } from 'context/AuthContext';
-import { BoardProvider } from 'context/BoardContext';
+import { ProjectProvider } from 'context/ProjectContext';
 
 import Container from 'components/Container';
 
@@ -16,7 +16,7 @@ function App() {
     <BrowserRouter>
       <QueryClientProvider client={client}>
         <AuthProvider>
-          <BoardProvider>
+          <ProjectProvider>
             <Routes>
               <Route path="/login" element={<Login />} />
 
@@ -25,7 +25,7 @@ function App() {
                 <Route path="about" element={<About />} />
               </Route>
             </Routes>
-          </BoardProvider>
+          </ProjectProvider>
         </AuthProvider>
       </QueryClientProvider>
     </BrowserRouter>

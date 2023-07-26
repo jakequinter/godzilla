@@ -7,7 +7,7 @@ import { invoke } from '@tauri-apps/api/tauri';
 import cn from 'utils/cn';
 
 import useAuth from 'hooks/useAuth';
-import useBoards from 'hooks/useBoards';
+import useProjects from 'hooks/useProjects';
 
 const routes = [
   {
@@ -25,7 +25,7 @@ const routes = [
 export default function Nav() {
   const { pathname } = useLocation();
   const { token, jiraInstance } = useAuth();
-  const { boards } = useBoards();
+  const { projects } = useProjects();
 
   const [boardId, setBoardId] = useState<string | null>();
 
@@ -45,7 +45,7 @@ export default function Nav() {
           className="block w-full rounded-md border-0 p-0.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
           onChange={e => setBoardId(e.target.value)}
         >
-          {boards.map(board => (
+          {projects.map(board => (
             <option key={board.id} value={board.id}>
               {board.name}
             </option>
