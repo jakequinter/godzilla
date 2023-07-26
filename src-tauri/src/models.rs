@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::error::TauriError;
+use serde::{Deserialize, Serialize};
 
 pub type ApiResult<T, E = TauriError> = Result<T, E>;
 
@@ -12,8 +12,12 @@ pub enum Url {
 impl Url {
     pub fn value(self) -> String {
         match self {
-            Url::JiraCoreUrl(jira_instance, path) => format!("https://{jira_instance}.atlassian.net/rest/api/3{path}"),
-            Url::JiraAgileUrl(jira_instance, path) => format!("https://{jira_instance}.atlassian.net/rest/agile/1.0{path}"),
+            Url::JiraCoreUrl(jira_instance, path) => {
+                format!("https://{jira_instance}.atlassian.net/rest/api/3{path}")
+            }
+            Url::JiraAgileUrl(jira_instance, path) => {
+                format!("https://{jira_instance}.atlassian.net/rest/agile/1.0{path}")
+            }
             Url::WithParams(url) => format!("https://whitespectre.atlassian.net/rest/api/3{}", url),
         }
     }
@@ -47,4 +51,3 @@ struct BoardValue {
     id: u32,
     name: String,
 }
-

@@ -1,6 +1,7 @@
-import { Route, Routes } from '@solidjs/router';
-import { QueryClient, QueryClientProvider } from '@tanstack/solid-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 
+import Container from './components/Container';
 import { AuthProvider } from './context/AuthContext';
 import About from './pages/About';
 import Home from './pages/Home';
@@ -10,16 +11,29 @@ const client = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={client}>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" component={Home} />
-          <Route path="/about" component={About} />
-          <Route path="/login" component={Login} />
-        </Routes>
-      </AuthProvider>
-    </QueryClientProvider>
+    <BrowserRouter>
+      <QueryClientProvider client={client}>
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+
+            <Route path="/" element={<AuthedRoute />}>
+              <Route index element={<Home />} />
+              <Route path="about" element={<About />} />
+            </Route>
+          </Routes>
+        </AuthProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 }
 
 export default App;
+
+const AuthedRoute = () => {
+  return (
+    <Container>
+      <Outlet />
+    </Container>
+  );
+};

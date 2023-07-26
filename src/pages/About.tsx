@@ -1,12 +1,10 @@
-import { A } from '@solidjs/router';
-
-import Container from '../components/Container';
+import { Link } from 'react-router-dom';
 
 export default function About() {
   return (
-    <Container>
+    <div>
       <h1>About</h1>
-      <A href="/">go home</A>
-    </Container>
+      <Link to="/">go home</Link>
+    </div>
   );
 }

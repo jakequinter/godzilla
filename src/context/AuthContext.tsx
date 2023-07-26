@@ -1,52 +1,45 @@
-import { createContext, createEffect, JSX, onCleanup } from 'solid-js';
-import { createStore } from 'solid-js/store';
-import { useNavigate } from '@solidjs/router';
+import { createContext, ReactNode, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/tauri';
 
-import { User } from '../types/user';
+import type { User } from 'types/user';
 
-type AuthState = {
+type AuthContextProps = {
   token: string | null;
   jiraInstance: string | null;
-  user?: User;
-};
-
-type AuthActions = {
-  setToken: (token: string) => void;
-  setJiraInstance: (jiraInstance: string) => void;
-  setUser: (user: User) => void;
+  user: User | null;
   login: (jiraInstance: string, email: string, apiKey: string) => void;
 };
 
-type AuthContextValue = [AuthState, AuthActions];
+export const AuthContext = createContext<AuthContextProps>({
+  token: null,
+  jiraInstance: null,
+  user: null,
+  login: () => {},
+});
 
-export const AuthContext = createContext<AuthContextValue>([
-  { token: '', jiraInstance: '' },
-  {
-    setToken: () => {},
-    setJiraInstance: () => {},
-    setUser: () => {},
-    login: () => {},
-  },
-]);
+type AuthProviderProps = {
+  children: ReactNode;
+};
 
-export function AuthProvider(props: { children: JSX.Element }) {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate();
-  const [state, setState] = createStore<AuthState>({
-    token: localStorage.getItem('token') || null,
-    jiraInstance: localStorage.getItem('jira-instance') || null,
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [jiraInstance, setJiraInstance] = useState<string | null>(
+    localStorage.getItem('jira-instance')
+  );
 
-  createEffect(() => {
-    if (!state.token || !state.jiraInstance) {
+  useEffect(() => {
+    if (!token || !jiraInstance) {
       clearAuth();
       return;
     }
 
     navigate('/');
-  }, [state.token, state.jiraInstance]);
+  }, []);
 
-  createEffect(() => {
+  useEffect(() => {
     const handleCookieChange = () => {
       const authToken = localStorage.getItem('token');
       const authInstance = localStorage.getItem('jira-instance');
@@ -57,47 +50,54 @@ export function AuthProvider(props: { children: JSX.Element }) {
     };
 
     window.addEventListener('storage', handleCookieChange);
-    onCleanup(() => {
+
+    return () => {
       window.removeEventListener('storage', handleCookieChange);
-    });
-  });
+    };
+  }, []);
 
   function clearAuth() {
-    setState('token', null);
-    setState('jiraInstance', null);
+    setToken(null);
+    setJiraInstance(null);
     localStorage.removeItem('token');
     localStorage.removeItem('jira-instance');
     navigate('/login');
   }
 
-  const user: AuthContextValue = [
-    state,
-    {
-      setToken: (token: string) => {
-        setState('token', token);
-      },
-      setJiraInstance: (jiraInstance: string) => {
-        setState('jiraInstance', jiraInstance);
-      },
-      setUser: (user: User) => {
-        setState('user', user);
-      },
-      login: async (jiraInstance: string, email: string, apiKey: string) => {
-        const token = btoa(`${email}:${apiKey}`);
-        try {
-          const data = await invoke<User>('myself', { jiraInstance, token });
-          setState('jiraInstance', jiraInstance);
-          setState('token', token);
-          setState('user', data);
-          localStorage.setItem('token', token);
-          localStorage.setItem('jira-instance', jiraInstance);
-        } catch (error) {
-          // TODO: show errors
-          console.log('error', error);
-        }
-      },
-    },
-  ];
+  const login = async (jiraInstance: string, email: string, apiKey: string) => {
+    const token = btoa(`${email}:${apiKey}`);
 
-  return <AuthContext.Provider value={user}>{props.children}</AuthContext.Provider>;
-}
+    try {
+      const data = await invoke<User>('myself', { jiraInstance, token });
+      setJiraInstance(jiraInstance);
+      setToken(token);
+      setUser(data);
+      localStorage.setItem('token', token);
+      localStorage.setItem('jira-instance', jiraInstance);
+      navigate('/');
+    } catch (error) {
+      // TODO: show errors
+      console.log('error', error);
+    }
+  };
+
+  // const logout = () => {
+  //   localStorage.removeItem('token');
+  //   setToken(null);
+  //   setUser(null);
+  //   navigate('/login');
+  // };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        token,
+        jiraInstance,
+        user,
+        login,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
