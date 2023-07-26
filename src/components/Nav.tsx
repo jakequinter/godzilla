@@ -1,12 +1,12 @@
+import { Link, useLocation } from 'react-router-dom';
 import { CheckCircle, Diamond, Notepad } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/tauri';
-import { useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 
-import { AuthContext } from '../context/AuthContext';
-import { Board } from '../types/board';
-import cn from '../utils/cn';
+import cn from 'utils/cn';
+
+import { Board } from 'types/board';
+import useAuth from 'hooks/useAuth';
 
 const routes = [
   {
@@ -23,7 +23,7 @@ const routes = [
 
 export default function Nav() {
   const { pathname } = useLocation();
-  const { token, jiraInstance } = useContext(AuthContext);
+  const { token, jiraInstance } = useAuth();
 
   const { data, isLoading } = useQuery<Board>({
     queryKey: ['projects'],
@@ -31,7 +31,11 @@ export default function Nav() {
       const data = await invoke<Board>('fetch_boards', { jiraInstance, token });
       return data;
     },
+    enabled: !!token && !!jiraInstance,
   });
+  console.log('token', token);
+  console.log('jiraInstance', jiraInstance);
+  console.log(data);
 
   return (
     <div className="flex h-screen flex-grow flex-col overflow-y-auto bg-white">

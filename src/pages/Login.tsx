@@ -1,12 +1,13 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
-import { AuthContext } from '../context/AuthContext';
+import useAuth from 'hooks/useAuth';
 
 export default function Login() {
+  const { login } = useAuth();
+
   const [jiraInstance, setJiraInstance] = useState('');
   const [email, setEmail] = useState('');
   const [token, setToken] = useState('');
-  const { login } = useContext(AuthContext);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -1,10 +1,8 @@
-'use client';
-
-import { invoke } from '@tauri-apps/api/tauri';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { invoke } from '@tauri-apps/api/tauri';
 
-import type { User } from '../types/user';
+import type { User } from 'types/user';
 
 type AuthContextProps = {
   token: string | null;
@@ -14,8 +12,8 @@ type AuthContextProps = {
 };
 
 export const AuthContext = createContext<AuthContextProps>({
-  token: '',
-  jiraInstance: '',
+  token: null,
+  jiraInstance: null,
   user: null,
   login: () => {},
 });
@@ -27,17 +25,19 @@ type AuthProviderProps = {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [jiraInstance, setJiraInstance] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [jiraInstance, setJiraInstance] = useState<string | null>(
+    localStorage.getItem('jira-instance')
+  );
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setToken(token);
-
-    if (!token) {
-      navigate('/login');
+    if (!token || !jiraInstance) {
+      clearAuth();
+      return;
     }
-  }, [navigate, token]);
+
+    navigate('/');
+  }, []);
 
   useEffect(() => {
     const handleCookieChange = () => {
