@@ -1,6 +1,6 @@
 use crate::api::get_request;
 use crate::error::TauriError;
-use crate::models::{ApiResult, Board, BoardValue, Project, Sprint, SprintValue, Url, User};
+use crate::models::{ApiResult, Board, BoardValue, Issue, Project, Sprint, SprintValue, Url, User};
 
 #[tauri::command]
 pub fn myself(token: &str, jira_instance: &str) -> ApiResult<User> {
@@ -58,4 +58,18 @@ pub fn fetch_active_sprint(token: &str, jira_instance: &str, board_id: &str) -> 
     }
 
     return Ok(None);
+}
+
+#[tauri::command]
+pub fn fetch_issues(token: &str, jira_instance: &str, account_id: &str) -> ApiResult<Issue> {
+    let response = get_request(
+        Url::JiraCoreParamsUrl(
+            jira_instance.to_string(),
+            format!("/search?jql=assignee='{account_id}'+AND+sprint+in+openSprints()"),
+        ),
+        token,
+    )?;
+    let data = serde_json::from_str(&response).unwrap();
+
+    return Ok(data);
 }

@@ -1,14 +1,18 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
 
-import type { Board, Project, Sprint } from 'types/project';
+import type { Board, Project } from 'types/project';
 import useAuth from 'hooks/useAuth';
 
 type ProjectContextProps = {
+  project: Project | null;
+  setProject: (project: Project | null) => void;
   projects: Project[];
 };
 
 export const ProjectContext = createContext<ProjectContextProps>({
+  project: null,
+  setProject: () => {},
   projects: [],
 });
 
@@ -18,6 +22,7 @@ type ProjectProviderProps = {
 
 export const ProjectProvider = ({ children }: ProjectProviderProps) => {
   const { token, jiraInstance } = useAuth();
+  const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
@@ -30,25 +35,20 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     try {
       const projectsData = await invoke<Project[]>('fetch_projects', { jiraInstance, token });
 
-      const fullProjects = [];
+      const projectsWithBoard = [];
 
       for (const project of projectsData) {
         const board = await fetchProjectBoard(project.id);
 
         if (board) {
-          const sprint = await fetchBoardActiveSprint(board.id.toString());
-
-          if (sprint) {
-            fullProjects.push({
-              ...project,
-              boardId: board.id,
-              sprintId: sprint.id,
-            });
-          }
+          projectsWithBoard.push({
+            ...project,
+            boardId: board.id,
+          });
         }
       }
 
-      setProjects(fullProjects);
+      setProjects(projectsWithBoard);
     } catch (error) {
       // TODO: show errors
       console.log('error', error);
@@ -64,18 +64,11 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     }
   };
 
-  const fetchBoardActiveSprint = async (boardId: string) => {
-    try {
-      return await invoke<Sprint>('fetch_active_sprint', { jiraInstance, token, boardId });
-    } catch (error) {
-      // TODO: show errors
-      console.log('error', error);
-    }
-  };
-
   return (
     <ProjectContext.Provider
       value={{
+        project,
+        setProject,
         projects,
       }}
     >

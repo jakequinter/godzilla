@@ -5,7 +5,7 @@ pub type ApiResult<T, E = TauriError> = Result<T, E>;
 
 pub enum Url {
     JiraCoreUrl(String, &'static str),
-    JiraAgileUrl(String, &'static str),
+    JiraCoreParamsUrl(String, String),
     JiraAgileParamsUrl(String, String),
 }
 
@@ -15,8 +15,8 @@ impl Url {
             Url::JiraCoreUrl(jira_instance, path) => {
                 format!("https://{jira_instance}.atlassian.net/rest/api/3{path}")
             }
-            Url::JiraAgileUrl(jira_instance, path) => {
-                format!("https://{jira_instance}.atlassian.net/rest/agile/1.0{path}")
+            Url::JiraCoreParamsUrl(jira_instance, path) => {
+                format!("https://{jira_instance}.atlassian.net/rest/api/3{path}")
             }
             Url::JiraAgileParamsUrl(jira_instance, path) => {
                 format!("https://{jira_instance}.atlassian.net/rest/agile/1.0{path}")
@@ -68,4 +68,16 @@ pub struct Sprint {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SprintValue {
     id: u32,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Issue {
+    total: u32,
+    issues: Vec<SprintIssue>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SprintIssue {
+    id: String,
+    key: String,
 }
