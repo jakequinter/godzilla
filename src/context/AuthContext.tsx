@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return;
     }
 
-    navigate('/');
+    validate(token, jiraInstance);
   }, []);
 
   useEffect(() => {
@@ -68,7 +68,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const token = btoa(`${email}:${apiKey}`);
 
     try {
-      const data = await invoke<User>('myself', { jiraInstance, token });
+      const data = await invoke<User>('myself', { token, jiraInstance });
+      setJiraInstance(jiraInstance);
+      setToken(token);
+      setUser(data);
+      localStorage.setItem('token', token);
+      localStorage.setItem('jira-instance', jiraInstance);
+      navigate('/');
+    } catch (error) {
+      // TODO: show errors
+      console.log('error', error);
+    }
+  };
+
+  const validate = async (token: string, jiraInstance: string) => {
+    try {
+      const data = await invoke<User>('myself', { token, jiraInstance });
       setJiraInstance(jiraInstance);
       setToken(token);
       setUser(data);

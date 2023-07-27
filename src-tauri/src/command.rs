@@ -1,10 +1,13 @@
 use crate::api::get_request;
 use crate::error::TauriError;
-use crate::models::{ApiResult, Board, Url, User };
+use crate::models::{ApiResult, Board, BoardValue, Project, Url, User};
 
 #[tauri::command]
-pub fn myself(jira_instance: &str, token: &str) -> ApiResult<User> {
-    let response = get_request(Url::JiraCoreUrl(jira_instance.to_string(), "/myself"),  token)?;
+pub fn myself(token: &str, jira_instance: &str) -> ApiResult<User> {
+    let response = get_request(
+        Url::JiraCoreUrl(jira_instance.to_string(), "/myself"),
+        token,
+    )?;
 
     if !response.starts_with("{") {
         let error = Err(TauriError {
@@ -15,13 +18,31 @@ pub fn myself(jira_instance: &str, token: &str) -> ApiResult<User> {
 
     let data = serde_json::from_str(&response).unwrap();
 
-    return Ok(data)
+    return Ok(data);
 }
 
 #[tauri::command]
-pub fn  fetch_boards(jira_instance: &str, token: &str) -> ApiResult<Board> {
-    let response = get_request(Url::JiraAgileUrl(jira_instance.to_string(), "/board"),  token)?;
+pub fn fetch_projects(token: &str, jira_instance: &str) -> ApiResult<Vec<Project>> {
+    let response = get_request(
+        Url::JiraCoreUrl(jira_instance.to_string(), "/project"),
+        token,
+    )?;
     let data = serde_json::from_str(&response).unwrap();
 
-    return Ok(data)
+    return Ok(data);
+}
+
+#[tauri::command]
+pub fn fetch_board(token: &str, jira_instance: &str, board_id: String) -> ApiResult<BoardValue> {
+    let response = get_request(
+        Url::JiraAgileParamsUrl(
+            jira_instance.to_string(),
+            format!("/board?projectKeyOrId={board_id}&state=active"),
+        ),
+        token,
+    )?;
+    let data: Board = serde_json::from_str(&response).unwrap();
+    let first_val = data.values.into_iter().next().unwrap();
+
+    return Ok(first_val);
 }
