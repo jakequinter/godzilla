@@ -5,10 +5,14 @@ import type { Board, Project } from 'types/project';
 import useAuth from 'hooks/useAuth';
 
 type ProjectContextProps = {
+  project: Project | null;
+  setProject: (project: Project | null) => void;
   projects: Project[];
 };
 
 export const ProjectContext = createContext<ProjectContextProps>({
+  project: null,
+  setProject: () => {},
   projects: [],
 });
 
@@ -18,6 +22,7 @@ type ProjectProviderProps = {
 
 export const ProjectProvider = ({ children }: ProjectProviderProps) => {
   const { token, jiraInstance } = useAuth();
+  const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
@@ -30,28 +35,29 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     try {
       const projectsData = await invoke<Project[]>('fetch_projects', { jiraInstance, token });
 
-      const projectsWithBoards = [];
+      const projectsWithBoard = [];
 
       for (const project of projectsData) {
         const board = await fetchProjectBoard(project.id);
+
         if (board) {
-          projectsWithBoards.push({
+          projectsWithBoard.push({
             ...project,
             boardId: board.id,
           });
         }
       }
 
-      setProjects(projectsWithBoards);
+      setProjects(projectsWithBoard);
     } catch (error) {
       // TODO: show errors
       console.log('error', error);
     }
   };
 
-  const fetchProjectBoard = async (boardId: string) => {
+  const fetchProjectBoard = async (projectId: string) => {
     try {
-      return await invoke<Board>('fetch_board', { jiraInstance, token, boardId });
+      return await invoke<Board>('fetch_board', { jiraInstance, token, projectId });
     } catch (error) {
       // TODO: show errors
       console.log('error', error);
@@ -61,6 +67,8 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
   return (
     <ProjectContext.Provider
       value={{
+        project,
+        setProject,
         projects,
       }}
     >

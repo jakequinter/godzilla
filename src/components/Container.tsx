@@ -1,3 +1,7 @@
+import { Spinner } from '@phosphor-icons/react';
+
+import useProjects from 'hooks/useProjects';
+
 import Nav from './Nav';
 
 type Props = {
@@ -5,6 +9,17 @@ type Props = {
 };
 
 export default function Container({ children }: Props) {
+  const { projects } = useProjects();
+
+  if (projects.length === 0) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center space-y-1">
+        <Spinner className="animate-spin text-violet-400" size={24} />
+        <p className="text-violet-400">Loading your projects...</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="fixed inset-y-0 flex w-48 flex-col">
