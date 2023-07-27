@@ -7,3 +7,7 @@ export type Project = {
 export type Board = {
   id: number;
 };
+
+export type Sprint = {
+  id: number;
+};

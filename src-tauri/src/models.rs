@@ -59,3 +59,13 @@ pub struct Board {
 pub struct BoardValue {
     pub id: u32,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Sprint {
+    pub values: Vec<SprintValue>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SprintValue {
+    id: u32,
+}

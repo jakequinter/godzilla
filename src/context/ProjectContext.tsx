@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
 
-import type { Board, Project } from 'types/project';
+import type { Board, Project, Sprint } from 'types/project';
 import useAuth from 'hooks/useAuth';
 
 type ProjectContextProps = {
@@ -30,28 +30,43 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     try {
       const projectsData = await invoke<Project[]>('fetch_projects', { jiraInstance, token });
 
-      const projectsWithBoards = [];
+      const fullProjects = [];
 
       for (const project of projectsData) {
         const board = await fetchProjectBoard(project.id);
+
         if (board) {
-          projectsWithBoards.push({
-            ...project,
-            boardId: board.id,
-          });
+          const sprint = await fetchBoardActiveSprint(board.id.toString());
+
+          if (sprint) {
+            fullProjects.push({
+              ...project,
+              boardId: board.id,
+              sprintId: sprint.id,
+            });
+          }
         }
       }
 
-      setProjects(projectsWithBoards);
+      setProjects(fullProjects);
     } catch (error) {
       // TODO: show errors
       console.log('error', error);
     }
   };
 
-  const fetchProjectBoard = async (boardId: string) => {
+  const fetchProjectBoard = async (projectId: string) => {
     try {
-      return await invoke<Board>('fetch_board', { jiraInstance, token, boardId });
+      return await invoke<Board>('fetch_board', { jiraInstance, token, projectId });
+    } catch (error) {
+      // TODO: show errors
+      console.log('error', error);
+    }
+  };
+
+  const fetchBoardActiveSprint = async (boardId: string) => {
+    try {
+      return await invoke<Sprint>('fetch_active_sprint', { jiraInstance, token, boardId });
     } catch (error) {
       // TODO: show errors
       console.log('error', error);
