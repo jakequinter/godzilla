@@ -85,7 +85,7 @@ pub struct SprintIssue {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SprintIssueFields {
-    customfield_10004: f32,
+    customfield_10004: Option<f32>,
     summary: String,
     status: SprintIssueStatus,
 }

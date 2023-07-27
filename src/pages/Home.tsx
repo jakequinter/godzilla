@@ -25,7 +25,7 @@ export default function Home() {
           <Card
             projectKey={issue.key}
             description={issue.fields.summary}
-            storyPoints={issue.fields.customfield_10004}
+            storyPoints={issue.fields.customfield_10004 ?? 0}
           />
         );
       }

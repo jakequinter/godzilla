@@ -10,7 +10,7 @@ type SprintIssue = {
 };
 
 type SprintIssueFields = {
-  customfield_10004: number;
+  customfield_10004?: number;
   summary: string;
   status: SprintIssueStatus;
 };

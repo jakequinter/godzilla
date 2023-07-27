@@ -3,6 +3,7 @@ export type Project = {
   key: string;
   name: string;
   boardId: number;
+  activeSprintId: number;
 };
 
 export type Board = {

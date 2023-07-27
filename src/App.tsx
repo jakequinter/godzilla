@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import About from 'pages/About';
 import Home from 'pages/Home';
 import Login from 'pages/Login';
+import Project from 'pages/Project';
 
 import { AuthProvider } from 'context/AuthContext';
 import { ProjectProvider } from 'context/ProjectContext';
@@ -23,6 +24,9 @@ function App() {
               <Route path="/" element={<AuthedRoute />}>
                 <Route index element={<Home />} />
                 <Route path="about" element={<About />} />
+                <Route path="/projects/:projectId" element={<Outlet />}>
+                  <Route index element={<Project />} />
+                </Route>
               </Route>
             </Routes>
           </ProjectProvider>
