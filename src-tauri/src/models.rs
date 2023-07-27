@@ -51,11 +51,11 @@ pub struct Project {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Sprint {
-    pub values: Vec<SprintValue>,
+pub struct Board {
+    pub values: Vec<BoardValue>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct SprintValue {
+pub struct BoardValue {
     pub id: u32,
 }

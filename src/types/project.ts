@@ -3,3 +3,7 @@ export type Project = {
   key: string;
   name: string;
 };
+
+export type Board = {
+  id: number;
+};

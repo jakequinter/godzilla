@@ -1,6 +1,6 @@
 use crate::api::get_request;
 use crate::error::TauriError;
-use crate::models::{ApiResult, Project, Sprint, SprintValue, Url, User};
+use crate::models::{ApiResult, Board, BoardValue, Project, Url, User};
 
 #[tauri::command]
 pub fn myself(token: &str, jira_instance: &str) -> ApiResult<User> {
@@ -33,7 +33,7 @@ pub fn fetch_projects(token: &str, jira_instance: &str) -> ApiResult<Vec<Project
 }
 
 #[tauri::command]
-pub fn fetch_board(token: &str, jira_instance: &str, board_id: String) -> ApiResult<SprintValue> {
+pub fn fetch_board(token: &str, jira_instance: &str, board_id: String) -> ApiResult<BoardValue> {
     let response = get_request(
         Url::JiraAgileParamsUrl(
             jira_instance.to_string(),
@@ -41,7 +41,7 @@ pub fn fetch_board(token: &str, jira_instance: &str, board_id: String) -> ApiRes
         ),
         token,
     )?;
-    let data: Sprint = serde_json::from_str(&response).unwrap();
+    let data: Board = serde_json::from_str(&response).unwrap();
     let first_val = data.values.into_iter().next().unwrap();
 
     return Ok(first_val);
