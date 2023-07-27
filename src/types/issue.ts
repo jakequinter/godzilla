@@ -6,4 +6,15 @@ export type Issue = {
 type SprintIssue = {
   id: string;
   key: string;
+  fields: SprintIssueFields;
+};
+
+type SprintIssueFields = {
+  customfield_10004: number;
+  summary: string;
+  status: SprintIssueStatus;
+};
+
+type SprintIssueStatus = {
+  name: string;
 };

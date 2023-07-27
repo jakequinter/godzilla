@@ -80,4 +80,17 @@ pub struct Issue {
 pub struct SprintIssue {
     id: String,
     key: String,
+    fields: SprintIssueFields,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SprintIssueFields {
+    customfield_10004: f32,
+    summary: String,
+    status: SprintIssueStatus,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SprintIssueStatus {
+    name: String,
 }
