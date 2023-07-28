@@ -9,7 +9,7 @@ export default function ProjectPage() {
   const { projectId } = useParams();
   const { token, jiraInstance } = useAuth();
 
-  const { data } = useQuery<Issue>({
+  const { data, isLoading } = useQuery<Issue>({
     queryKey: ['fetch-board-issues', projectId],
     queryFn: async () =>
       await invoke<Issue>('fetch_active_sprint_issues', {
@@ -37,6 +37,8 @@ export default function ProjectPage() {
       );
     });
   }
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="-my-4 flex min-h-screen flex-col py-4">

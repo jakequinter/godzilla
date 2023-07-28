@@ -1,11 +1,10 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use command::{fetch_active_sprint, fetch_active_sprint_issues, fetch_board, fetch_issues, fetch_projects, myself};
+use command::{fetch_active_sprint, fetch_active_sprint_issues, fetch_board, fetch_projects, myself};
 
 mod api;
 mod command;
-mod error;
 mod models;
 
 fn main() {
@@ -14,7 +13,6 @@ fn main() {
             fetch_active_sprint,
             fetch_active_sprint_issues,
             fetch_board,
-            fetch_issues,
             fetch_projects,
             myself
         ])
