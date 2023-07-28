@@ -61,6 +61,17 @@ pub fn fetch_active_sprint(token: &str, jira_instance: &str, board_id: &str) -> 
 }
 
 #[tauri::command]
+pub fn fetch_active_sprint_issues(token: &str, jira_instance: &str, sprint_id: &str) -> ApiResult<Issue> {
+    let response = get_request(
+        Url::JiraCoreParamsUrl(jira_instance.to_string(), format!("/search?jql=sprint={sprint_id}")),
+        token,
+    )?;
+    let data = serde_json::from_str(&response).unwrap();
+
+    return Ok(data);
+}
+
+#[tauri::command]
 pub fn fetch_issues(token: &str, jira_instance: &str, account_id: &str) -> ApiResult<Issue> {
     let response = get_request(
         Url::JiraCoreParamsUrl(

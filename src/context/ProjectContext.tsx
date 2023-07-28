@@ -24,6 +24,7 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
   const { token, jiraInstance } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
+  console.log('projects', projects);
 
   useEffect(() => {
     if (token && jiraInstance) {
@@ -35,20 +36,25 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     try {
       const projectsData = await invoke<Project[]>('fetch_projects', { jiraInstance, token });
 
-      const projectsWithBoard = [];
+      const fullProjects = [];
 
       for (const project of projectsData) {
         const board = await fetchProjectBoard(project.id);
 
         if (board) {
-          projectsWithBoard.push({
-            ...project,
-            boardId: board.id,
-          });
+          const activeSprint = await fetchActiveSpring(board.id.toString());
+
+          if (activeSprint) {
+            fullProjects.push({
+              ...project,
+              boardId: board.id,
+              activeSprintId: activeSprint.id,
+            });
+          }
         }
       }
 
-      setProjects(projectsWithBoard);
+      setProjects(fullProjects);
     } catch (error) {
       // TODO: show errors
       console.log('error', error);
@@ -58,6 +64,15 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
   const fetchProjectBoard = async (projectId: string) => {
     try {
       return await invoke<Board>('fetch_board', { jiraInstance, token, projectId });
+    } catch (error) {
+      // TODO: show errors
+      console.log('error', error);
+    }
+  };
+
+  const fetchActiveSpring = async (boardId: string) => {
+    try {
+      return await invoke<Board>('fetch_active_sprint', { jiraInstance, token, boardId });
     } catch (error) {
       // TODO: show errors
       console.log('error', error);
