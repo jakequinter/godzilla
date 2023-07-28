@@ -49,7 +49,7 @@ export default function Nav() {
             <h3 className="mb-2 text-xs">Projects</h3>
             <ul className="space-y-1">
               {projects.map(project => (
-                <li>
+                <li key={project.id}>
                   <Link
                     to={`/projects/${project.activeSprintId}`}
                     className={cn(

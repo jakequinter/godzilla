@@ -1,7 +1,4 @@
-use crate::error::TauriError;
 use serde::{Deserialize, Serialize};
-
-pub type ApiResult<T, E = TauriError> = Result<T, E>;
 
 pub enum Url {
     JiraCoreUrl(String, &'static str),

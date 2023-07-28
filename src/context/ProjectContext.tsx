@@ -24,7 +24,6 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
   const { token, jiraInstance } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
-  console.log('projects', projects);
 
   useEffect(() => {
     if (token && jiraInstance) {
@@ -42,7 +41,7 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
         const board = await fetchProjectBoard(project.id);
 
         if (board) {
-          const activeSprint = await fetchActiveSpring(board.id.toString());
+          const activeSprint = await fetchActiveSprint(board.id);
 
           if (activeSprint) {
             fullProjects.push({
@@ -70,7 +69,7 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     }
   };
 
-  const fetchActiveSpring = async (boardId: string) => {
+  const fetchActiveSprint = async (boardId: number) => {
     try {
       return await invoke<Board>('fetch_active_sprint', { jiraInstance, token, boardId });
     } catch (error) {
