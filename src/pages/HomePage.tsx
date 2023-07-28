@@ -4,7 +4,7 @@ import { invoke } from '@tauri-apps/api/tauri';
 import type { Issue } from 'types/issue';
 import useAuth from 'hooks/useAuth';
 
-export default function Home() {
+export default function HomePage() {
   const { token, jiraInstance, user } = useAuth();
 
   const { data } = useQuery<Issue>({

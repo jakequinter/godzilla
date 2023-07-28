@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import useAuth from 'hooks/useAuth';
 
-export default function Login() {
+export default function LoginPage() {
   const { login } = useAuth();
 
   const [jiraInstance, setJiraInstance] = useState('');

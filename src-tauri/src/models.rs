@@ -32,7 +32,7 @@ pub struct User {
     #[serde(rename = "displayName")]
     display_name: String,
     #[serde(rename = "emailAddress")]
-    email_address: String,
+    email_address: Option<String>,
     #[serde(rename = "avatarUrls")]
     avatar_url: AvatarUrl,
 }
@@ -85,6 +85,7 @@ pub struct SprintIssue {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SprintIssueFields {
+    assignee: Option<User>,
     customfield_10004: Option<f32>,
     summary: String,
     status: SprintIssueStatus,

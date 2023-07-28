@@ -1,3 +1,5 @@
+import { User } from './user';
+
 export type Issue = {
   total: number;
   issues: SprintIssue[];
@@ -10,6 +12,7 @@ type SprintIssue = {
 };
 
 type SprintIssueFields = {
+  assignee?: User;
   customfield_10004?: number;
   summary: string;
   status: SprintIssueStatus;
