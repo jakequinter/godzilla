@@ -9,14 +9,25 @@ export default function ProjectPage() {
   const { projectId } = useParams();
   const { token, jiraInstance } = useAuth();
 
-  const { data, isLoading } = useQuery<Issue>({
+  const { data, isLoading, error } = useQuery<Issue, Error>({
     queryKey: ['fetch-board-issues', projectId],
-    queryFn: async () =>
-      await invoke<Issue>('fetch_active_sprint_issues', {
-        jiraInstance,
-        token,
-        sprintId: projectId,
-      }),
+    queryFn: async () => {
+      try {
+        const issues = await invoke<Issue>('fetch_active_sprint_issues', {
+          jiraInstance,
+          token,
+          sprintId: projectId,
+        });
+
+        return issues;
+      } catch (error) {
+        if (typeof error === 'string') {
+          throw new Error(error);
+        } else {
+          throw new Error('Unknown error');
+        }
+      }
+    },
     enabled: !!token && !!jiraInstance && !!projectId,
   });
 
@@ -37,7 +48,8 @@ export default function ProjectPage() {
       );
     });
   }
-
+  console.log('errorrrrrrrrr', error);
+  if (error) return <pre>{error.message}</pre>;
   if (isLoading) return <div>Loading...</div>;
 
   return (
