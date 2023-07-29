@@ -1,36 +1,44 @@
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
 import type { Issue } from 'types/issue';
-import type { Transition } from 'types/transition';
 import useAuth from 'hooks/useAuth';
+import useBoard from 'hooks/useBoard';
 import useInvoke from 'hooks/useInvoke';
+import useProjects from 'hooks/useProjects';
 
 export default function ProjectPage() {
   const { projectId } = useParams();
   const { token, jiraInstance } = useAuth();
+  const { columns, setIssueId } = useBoard();
+  const { projects, project, setProject } = useProjects();
+
+  useEffect(() => {
+    if (projectId) {
+      const project = projects.find(project => project.id === projectId);
+      if (project) {
+        setProject(project);
+      }
+    }
+  }, [projectId, projects]);
 
   const { data, isLoading, error } = useQuery<Issue, Error>({
-    queryKey: ['fetch-board-issues', projectId],
+    queryKey: ['fetch-board-issues', project],
     queryFn: async () =>
       useInvoke('fetch_active_sprint_issues', {
         token,
         jiraInstance,
-        sprintId: projectId,
+        sprintId: project?.activeSprintId,
       }),
-    enabled: !!token && !!jiraInstance && !!projectId,
+    enabled: !!project,
   });
 
-  const { data: transitions, isLoading: loadingTransitions } = useQuery<Transition, Error>({
-    queryKey: ['fetch-transitions', data],
-    queryFn: async () =>
-      useInvoke('fetch_transitions', {
-        token,
-        jiraInstance,
-        issueId: data?.issues[0].id,
-      }),
-    enabled: !!data,
-  });
+  useEffect(() => {
+    if (data?.issues) {
+      setIssueId(data.issues[0].id);
+    }
+  }, [data]);
 
   function renderIssues(categories: string[]) {
     const issues = data?.issues.filter(issue => categories.includes(issue.fields.status.name));
@@ -50,26 +58,16 @@ export default function ProjectPage() {
 
   // TODO: loading & error states
   if (error) return <pre>{error.message}</pre>;
-  if (isLoading || loadingTransitions) return <div>Loading...</div>;
+  if (isLoading || !columns) return <div>Loading...</div>;
 
   return (
     <div className="-my-4 flex min-h-screen flex-col py-4">
       <div className="-mx-4 flex flex-1 gap-1 overflow-x-scroll px-4">
-        <Column title="To Do" count={1}>
-          {renderIssues(['Open', 'Ready for Dev', 'Ready for Grooming'])}
-        </Column>
-        <Column title="In Progress" count={1}>
-          {renderIssues(['In Dev'])}
-        </Column>
-        <Column title="Code Review" count={1}>
-          {renderIssues(['In Code Review', 'Ready for Code Review'])}
-        </Column>
-        <Column title="Accepted" count={1}>
-          {renderIssues(['In Product Review', 'In QA', 'Ready for Product Review', 'Ready for QA'])}
-        </Column>
-        <Column title="Done" count={1}>
-          {renderIssues(['Accepted', 'Closed', 'Ready for Release', 'Ready for Stage QA'])}
-        </Column>
+        {columns.map(column => (
+          <Column key={column.name} title={column.name} count={1}>
+            {renderIssues(['Open', 'Ready for Dev', 'Ready for Grooming'])}
+          </Column>
+        ))}
       </div>
     </div>
   );

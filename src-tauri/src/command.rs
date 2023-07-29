@@ -61,7 +61,7 @@ pub async fn fetch_active_sprint(
 pub async fn fetch_active_sprint_issues(
     token: &str,
     jira_instance: String,
-    sprint_id: String,
+    sprint_id: u32,
 ) -> ApiResult<Issue> {
     let response = get_request(
         Url::JiraCoreParamsUrl(jira_instance, format!("/search?jql=sprint={sprint_id}")),

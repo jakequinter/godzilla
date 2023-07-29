@@ -6,11 +6,15 @@ import useAuth from 'hooks/useAuth';
 
 type ProjectContextProps = {
   projects: Project[];
+  project: Project | null;
+  setProject: (project: Project) => void;
   loading: boolean;
 };
 
 export const ProjectContext = createContext<ProjectContextProps>({
   projects: [],
+  project: null,
+  setProject: () => {},
   loading: false,
 });
 
@@ -21,6 +25,7 @@ type ProjectProviderProps = {
 export const ProjectProvider = ({ children }: ProjectProviderProps) => {
   const { token, jiraInstance } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -82,6 +87,8 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     <ProjectContext.Provider
       value={{
         projects,
+        project,
+        setProject,
         loading,
       }}
     >

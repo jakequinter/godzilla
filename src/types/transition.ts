@@ -2,7 +2,7 @@ export type Transition = {
   transitions: TransitionValue[];
 };
 
-type TransitionValue = {
+export type TransitionValue = {
   id: string;
   name: string;
   to: {

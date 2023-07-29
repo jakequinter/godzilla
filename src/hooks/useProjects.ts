@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { ProjectContext } from 'context/ProjectContext';
 
 export default function useProjects() {
-  const { projects, loading } = useContext(ProjectContext);
+  const { projects, project, setProject, loading } = useContext(ProjectContext);
 
-  return { projects, loading };
+  return { projects, project, setProject, loading };
 }

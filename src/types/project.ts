@@ -1,3 +1,5 @@
+import { TransitionValue } from './transition';
+
 export type Project = {
   id: string;
   key: string;
@@ -18,13 +20,14 @@ export type BoardColumn = {
   columnConfig: BoardColumnConfig;
 };
 
-type BoardColumnConfig = {
+export type BoardColumnConfig = {
   columns: BoardColumnConfigColumn[];
 };
 
-type BoardColumnConfigColumn = {
+export type BoardColumnConfigColumn = {
   name: string;
   statuses: BoardColumnConfigColumnStatus[];
+  transitions?: TransitionValue[];
 };
 
 type BoardColumnConfigColumnStatus = {

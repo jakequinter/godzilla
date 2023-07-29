@@ -30,14 +30,14 @@ pub async fn fetch_board(
 pub async fn fetch_board_config(
     token: &str,
     jira_instance: String,
-    board_id: String,
+    board_id: u32,
 ) -> ApiResult<BoardColumn> {
     let response = get_request(
         Url::JiraAgileParamsUrl(jira_instance, format!("/board/{board_id}/configuration")),
         token,
     )
     .await?;
-    let data = parse_json(&response)?;
+    let data: BoardColumn = parse_json(&response)?;
 
     Ok(data)
 }

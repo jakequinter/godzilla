@@ -24,4 +24,10 @@ struct BoardColumnConfig {
 #[derive(Debug, Deserialize, Serialize)]
 struct BoardColumnConfigColumn {
     name: String,
+    statuses: Vec<BoardColumnConfigColumnStatus>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct BoardColumnConfigColumnStatus {
+    id: String,
 }

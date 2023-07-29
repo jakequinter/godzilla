@@ -51,11 +51,9 @@ export default function Nav() {
               {projects.map(project => (
                 <li key={project.id}>
                   <Link
-                    to={`/projects/${project.activeSprintId}`}
+                    to={`/projects/${project.id}`}
                     className={cn(
-                      pathname.includes(project.activeSprintId.toString())
-                        ? `bg-gray-100 text-gray-900 `
-                        : '',
+                      pathname.includes(project.id) ? `bg-gray-100 text-gray-900 ` : '',
                       'group relative flex w-full cursor-default items-center space-x-2 rounded-md p-1 text-left font-medium hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-0'
                     )}
                   >
