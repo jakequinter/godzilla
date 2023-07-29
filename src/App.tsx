@@ -6,6 +6,7 @@ import LoginPage from 'pages/LoginPage';
 import ProjectPage from 'pages/ProjectPage';
 
 import { AuthProvider } from 'context/AuthContext';
+import { BoardProvider } from 'context/BoardContext';
 import { ProjectProvider } from 'context/ProjectContext';
 
 import Container from 'components/Container';
@@ -18,17 +19,19 @@ function App() {
       <QueryClientProvider client={client}>
         <AuthProvider>
           <ProjectProvider>
-            <Routes>
-              <Route path="/login" element={<LoginPage />} />
+            <BoardProvider>
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
 
-              <Route path="/" element={<AuthedRoute />}>
-                <Route index element={<HomePage />} />
-                <Route path="about" element={<AboutPage />} />
-                <Route path="/projects/:projectId" element={<Outlet />}>
-                  <Route index element={<ProjectPage />} />
+                <Route path="/" element={<AuthedRoute />}>
+                  <Route index element={<HomePage />} />
+                  <Route path="about" element={<AboutPage />} />
+                  <Route path="/projects/:projectId" element={<Outlet />}>
+                    <Route index element={<ProjectPage />} />
+                  </Route>
                 </Route>
-              </Route>
-            </Routes>
+              </Routes>
+            </BoardProvider>
           </ProjectProvider>
         </AuthProvider>
       </QueryClientProvider>

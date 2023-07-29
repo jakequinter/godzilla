@@ -1,7 +1,7 @@
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
 
 use crate::error::TauriError;
-use crate::models::Url;
+use crate::models::url::Url;
 
 pub type ApiResult<T, E = TauriError> = Result<T, E>;
 
@@ -20,11 +20,7 @@ pub async fn get_request(url: Url, token: &str) -> ApiResult<String> {
     let mut request_builder = client.get(url);
     request_builder = request_builder.headers(construct_headers(token));
 
-    let response = request_builder
-        .send()
-        .await?
-        .text()
-        .await?;
+    let response = request_builder.send().await?.text().await?;
 
     Ok(response)
 }

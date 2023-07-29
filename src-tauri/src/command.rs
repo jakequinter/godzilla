@@ -1,6 +1,10 @@
 use crate::api::{get_request, parse_json, ApiResult};
 use crate::error::TauriError;
-use crate::models::{Board, BoardValue, Issue, Project, Sprint, SprintValue, Url, User};
+use crate::models::issue::Issue;
+use crate::models::project::Project;
+use crate::models::sprint::{Sprint, SprintValue};
+use crate::models::url::Url;
+use crate::models::user::User;
 
 #[tauri::command]
 pub async fn myself(token: &str, jira_instance: &str) -> ApiResult<User> {
@@ -31,29 +35,6 @@ pub async fn fetch_projects(token: &str, jira_instance: &str) -> ApiResult<Vec<P
 }
 
 #[tauri::command]
-pub async fn fetch_board(
-    token: &str,
-    jira_instance: String,
-    project_id: String,
-) -> ApiResult<Option<BoardValue>> {
-    let response = get_request(
-        Url::JiraAgileParamsUrl(
-            jira_instance.to_string(),
-            format!("/board?projectKeyOrId={project_id}&state=active"),
-        ),
-        token,
-    )
-    .await?;
-
-    let data: Board = parse_json(&response)?;
-    let first_val = data.values.into_iter().next().ok_or_else(|| TauriError {
-        message: "No active board found".to_string(),
-    })?;
-
-    Ok(Some(first_val))
-}
-
-#[tauri::command]
 pub async fn fetch_active_sprint(
     token: &str,
     jira_instance: String,
@@ -80,7 +61,7 @@ pub async fn fetch_active_sprint(
 pub async fn fetch_active_sprint_issues(
     token: &str,
     jira_instance: String,
-    sprint_id: String,
+    sprint_id: u32,
 ) -> ApiResult<Issue> {
     let response = get_request(
         Url::JiraCoreParamsUrl(jira_instance, format!("/search?jql=sprint={sprint_id}")),
