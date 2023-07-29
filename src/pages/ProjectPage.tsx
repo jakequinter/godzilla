@@ -47,6 +47,7 @@ export default function ProjectPage() {
     return issues.map(issue => {
       return (
         <Card
+          key={issue.id}
           projectKey={issue.key}
           description={issue.fields.summary}
           storyPoints={issue.fields.customfield_10004 ?? '-'}
@@ -65,7 +66,7 @@ export default function ProjectPage() {
       <div className="-mx-4 flex flex-1 gap-1 overflow-x-scroll px-4">
         {columns.map(column => (
           <Column key={column.name} title={column.name} count={1}>
-            {renderIssues(['Open', 'Ready for Dev', 'Ready for Grooming'])}
+            {renderIssues(column.transitions?.map(transition => transition.name))}
           </Column>
         ))}
       </div>

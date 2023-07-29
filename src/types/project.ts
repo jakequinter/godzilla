@@ -27,7 +27,7 @@ export type BoardColumnConfig = {
 export type BoardColumnConfigColumn = {
   name: string;
   statuses: BoardColumnConfigColumnStatus[];
-  transitions?: TransitionValue[];
+  transitions: TransitionValue[];
 };
 
 type BoardColumnConfigColumnStatus = {
