@@ -5,6 +5,7 @@ use command::{fetch_active_sprint, fetch_active_sprint_issues, fetch_board, fetc
 
 mod api;
 mod command;
+mod error;
 mod models;
 
 fn main() {

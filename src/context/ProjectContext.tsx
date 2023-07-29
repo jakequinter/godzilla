@@ -8,12 +8,14 @@ type ProjectContextProps = {
   project: Project | null;
   setProject: (project: Project | null) => void;
   projects: Project[];
+  loading: boolean;
 };
 
 export const ProjectContext = createContext<ProjectContextProps>({
   project: null,
   setProject: () => {},
   projects: [],
+  loading: false,
 });
 
 type ProjectProviderProps = {
@@ -24,6 +26,7 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
   const { token, jiraInstance } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (token && jiraInstance) {
@@ -32,6 +35,7 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
   }, [token, jiraInstance]);
 
   const fetchProjects = async () => {
+    setLoading(true);
     try {
       const projectsData = await invoke<Project[]>('fetch_projects', { jiraInstance, token });
 
@@ -58,6 +62,7 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
       // TODO: show errors
       console.log('error', error);
     }
+    setLoading(false);
   };
 
   const fetchProjectBoard = async (projectId: string) => {
@@ -84,6 +89,7 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
         project,
         setProject,
         projects,
+        loading,
       }}
     >
       {children}

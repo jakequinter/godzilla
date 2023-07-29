@@ -9,9 +9,9 @@ type Props = {
 };
 
 export default function Container({ children }: Props) {
-  const { projects } = useProjects();
+  const { loading } = useProjects();
 
-  if (projects.length === 0) {
+  if (loading) {
     return (
       <div className="flex h-screen flex-col items-center justify-center space-y-1">
         <Spinner className="animate-spin text-violet-400" size={24} />
