@@ -13,3 +13,20 @@ export type Board = {
 export type Sprint = {
   id: number;
 };
+
+export type BoardColumn = {
+  columnConfig: BoardColumnConfig;
+};
+
+type BoardColumnConfig = {
+  columns: BoardColumnConfigColumn[];
+};
+
+type BoardColumnConfigColumn = {
+  name: string;
+  statuses: BoardColumnConfigColumnStatus[];
+};
+
+type BoardColumnConfigColumnStatus = {
+  id: string;
+};

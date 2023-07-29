@@ -1,9 +1,10 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { invoke } from '@tauri-apps/api/tauri';
 
 import type { Issue } from 'types/issue';
+import type { Transition } from 'types/transition';
 import useAuth from 'hooks/useAuth';
+import useInvoke from 'hooks/useInvoke';
 
 export default function ProjectPage() {
   const { projectId } = useParams();
@@ -11,27 +12,25 @@ export default function ProjectPage() {
 
   const { data, isLoading, error } = useQuery<Issue, Error>({
     queryKey: ['fetch-board-issues', projectId],
-    queryFn: async () => {
-      try {
-        const issues = await invoke<Issue>('fetch_active_sprint_issues', {
-          jiraInstance,
-          token,
-          sprintId: projectId,
-        });
-
-        return issues;
-      } catch (error) {
-        if (typeof error === 'string') {
-          throw new Error(error);
-        } else {
-          throw new Error('Unknown error');
-        }
-      }
-    },
+    queryFn: async () =>
+      useInvoke('fetch_active_sprint_issues', {
+        token,
+        jiraInstance,
+        sprintId: projectId,
+      }),
     enabled: !!token && !!jiraInstance && !!projectId,
   });
 
-  // TODO: fetch transitions
+  const { data: transitions, isLoading: loadingTransitions } = useQuery<Transition, Error>({
+    queryKey: ['fetch-transitions', data],
+    queryFn: async () =>
+      useInvoke('fetch_transitions', {
+        token,
+        jiraInstance,
+        issueId: data?.issues[0].id,
+      }),
+    enabled: !!data,
+  });
 
   function renderIssues(categories: string[]) {
     const issues = data?.issues.filter(issue => categories.includes(issue.fields.status.name));
@@ -48,9 +47,10 @@ export default function ProjectPage() {
       );
     });
   }
-  console.log('errorrrrrrrrr', error);
+
+  // TODO: loading & error states
   if (error) return <pre>{error.message}</pre>;
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading || loadingTransitions) return <div>Loading...</div>;
 
   return (
     <div className="-my-4 flex min-h-screen flex-col py-4">
