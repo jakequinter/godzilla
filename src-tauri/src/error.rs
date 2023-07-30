@@ -2,7 +2,6 @@ use anyhow::Error as AnyhowError;
 use reqwest::StatusCode;
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug)]
 pub struct TauriError {
     pub message: String,
 }
