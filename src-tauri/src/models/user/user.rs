@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct User {
     #[serde(rename = "accountId")]
     account_id: String,
@@ -12,7 +12,7 @@ pub struct User {
     avatar_url: AvatarUrl,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct AvatarUrl {
     #[serde(rename = "16x16")]
     avatar_16: String,
