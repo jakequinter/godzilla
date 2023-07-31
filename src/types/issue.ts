@@ -5,7 +5,7 @@ export type Issue = {
   issues: SprintIssue[];
 };
 
-type SprintIssue = {
+export type SprintIssue = {
   id: string;
   key: string;
   fields: SprintIssueFields;
@@ -19,5 +19,6 @@ type SprintIssueFields = {
 };
 
 type SprintIssueStatus = {
+  id: string;
   name: string;
 };

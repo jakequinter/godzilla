@@ -34,5 +34,6 @@ struct SprintIssueFields {
 
 #[derive(Deserialize, Serialize)]
 struct SprintIssueStatus {
+    id: String,
     name: String,
 }
