@@ -30,7 +30,7 @@ export const Column: FC<Props> = memo(function Column({ title, count, accept, on
 
   return (
     <div ref={drop} className="flex min-w-[200px] flex-1 flex-col">
-      <p>{`This dustbin accepts: ${accept.join(', ')}`}</p>
+      <p>{`This column accepts: ${accept.join(', ')}`}</p>
       <span className="inline-flex gap-x-2 text-xs font-medium text-gray-700">
         {title}
         <span className="text-gray-400">{count}</span>

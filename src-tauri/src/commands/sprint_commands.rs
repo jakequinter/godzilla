@@ -68,6 +68,10 @@ pub async fn update_issue(
     )
     .await?;
 
+    if status == 204 {
+        return Ok(());
+    }
+
     if data.is_empty() {
         // Handle scenarios where the response is empty or non-JSON
         return Err(TauriError {

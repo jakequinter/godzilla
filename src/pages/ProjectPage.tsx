@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/tauri';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -16,10 +16,29 @@ import Column from 'components/Column';
 import { IssueCard } from 'components/IssueCard';
 
 export default function ProjectPage() {
+  const queryClient = useQueryClient();
   const { projectId } = useParams();
   const { token, jiraInstance } = useAuth();
   const { columns, setIssueId } = useBoard();
   const { projects, project, setProject } = useProjects();
+
+  const mutation = useMutation({
+    mutationFn: async data => {
+      return await invoke('update_issue', {
+        token,
+        jiraInstance,
+        issueId: data.issueId,
+        transitionId: data.transitionId,
+      });
+    },
+    onSuccess: () => {
+      console.log('success');
+      queryClient.invalidateQueries({ queryKey: ['fetch-board-issues', project] });
+    },
+    onError: () => {
+      console.log('error');
+    },
+  });
 
   useEffect(() => {
     if (projectId) {
@@ -61,18 +80,19 @@ export default function ProjectPage() {
   if (isLoading || !columns) return <div>Loading...</div>;
 
   const handleDrop = async (issue: SprintIssue, transitionId: string) => {
-    try {
-      const result = await invoke('update_issue', {
-        token,
-        jiraInstance,
-        issueId: issue.id,
-        transitionId,
-      });
-
-      console.log('result', result);
-    } catch (error) {
-      console.log('error', error);
-    }
+    mutation.mutate({ issueId: issue.id, transitionId });
+    // try {
+    //   const result = await invoke('update_issue', {
+    //     token,
+    //     jiraInstance,
+    //     issueId: issue.id,
+    //     transitionId,
+    //   });
+    //
+    //   console.log('result', result);
+    // } catch (error) {
+    //   console.log('error', error);
+    // }
   };
 
   function handleAccepts(column: BoardColumnConfigColumn) {
