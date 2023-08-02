@@ -7,6 +7,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import type { Issue, SprintIssue } from 'types/issue';
 import type { BoardColumnConfigColumn } from 'types/project';
+import type { TransitionValue } from 'types/transition';
 import useAuth from 'hooks/useAuth';
 import useBoard from 'hooks/useBoard';
 import useInvoke from 'hooks/useInvoke';
@@ -21,29 +22,30 @@ export default function ProjectPage() {
   const { token, jiraInstance } = useAuth();
   const { columns, setIssueId } = useBoard();
   const { projects, project, setProject } = useProjects();
-  console.log('columns', columns);
+
+  type UpdateIssueData = {
+    issue: SprintIssue;
+    transition: TransitionValue;
+    columnName: string;
+  };
 
   const mutation = useMutation({
-    mutationFn: async data => {
+    mutationFn: async (data: UpdateIssueData) => {
       return await invoke('update_issue', {
         token,
         jiraInstance,
         issueId: data.issue.id,
-        transitionId: data.transitionId,
+        transitionId: data.transition.id,
       });
     },
     onMutate: async newData => {
       const previousIssues = queryClient.getQueryData(['fetch-board-issues', project]);
       queryClient.setQueryData(['fetch-board-issues', project], old => {
         const issues = [...old.issues];
-        // Finding the issue and updating its status
         const issueIndex = issues.findIndex(issue => issue.id === newData.issue.id);
         if (issueIndex !== -1) {
-          // TODO: status.id needs to be matched to the transition id
-          const transitionId = '';
-          issues[issueIndex].fields.status.id = '10000';
-          // TODO: need to pass the name of the status in handleDrop?
-          issues[issueIndex].fields.status.name = 'In Dev';
+          issues[issueIndex].fields.status.id = newData.transition.to.id;
+          issues[issueIndex].fields.status.name = newData.columnName;
         }
         return { ...old, issues };
       });
@@ -54,8 +56,11 @@ export default function ProjectPage() {
       console.log('success');
       // queryClient.invalidateQueries({ queryKey: ['fetch-board-issues', project] });
     },
-    onError: () => {
+    onError: (err, newData, context) => {
       console.log('error');
+      if (context?.previousIssues) {
+        queryClient.setQueryData(['fetch-board-issues', project], context.previousIssues);
+      }
     },
   });
 
@@ -98,8 +103,12 @@ export default function ProjectPage() {
   if (error) return <pre>{error.message}</pre>;
   if (isLoading || !columns) return <div>Loading...</div>;
 
-  const handleDrop = async (issue: SprintIssue, transitionId: string) => {
-    mutation.mutate({ issue, transitionId });
+  const handleDrop = async (
+    issue: SprintIssue,
+    transition: TransitionValue,
+    columnName: string
+  ) => {
+    mutation.mutate({ issue, transition, columnName });
   };
 
   function handleAccepts(column: BoardColumnConfigColumn) {
@@ -119,7 +128,7 @@ export default function ProjectPage() {
               key={column.name}
               title={column.name}
               count={1}
-              onDrop={item => handleDrop(item, column.transitions[0].id)}
+              onDrop={item => handleDrop(item, column.transitions[0], column.transitions[0].name)}
             >
               {renderIssues(column.transitions?.map(transition => transition.name))}
             </Column>
