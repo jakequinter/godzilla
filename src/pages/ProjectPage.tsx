@@ -21,19 +21,38 @@ export default function ProjectPage() {
   const { token, jiraInstance } = useAuth();
   const { columns, setIssueId } = useBoard();
   const { projects, project, setProject } = useProjects();
+  console.log('columns', columns);
 
   const mutation = useMutation({
     mutationFn: async data => {
       return await invoke('update_issue', {
         token,
         jiraInstance,
-        issueId: data.issueId,
+        issueId: data.issue.id,
         transitionId: data.transitionId,
       });
     },
+    onMutate: async newData => {
+      const previousIssues = queryClient.getQueryData(['fetch-board-issues', project]);
+      queryClient.setQueryData(['fetch-board-issues', project], old => {
+        const issues = [...old.issues];
+        // Finding the issue and updating its status
+        const issueIndex = issues.findIndex(issue => issue.id === newData.issue.id);
+        if (issueIndex !== -1) {
+          // TODO: status.id needs to be matched to the transition id
+          const transitionId = '';
+          issues[issueIndex].fields.status.id = '10000';
+          // TODO: need to pass the name of the status in handleDrop?
+          issues[issueIndex].fields.status.name = 'In Dev';
+        }
+        return { ...old, issues };
+      });
+
+      return { previousIssues };
+    },
     onSuccess: () => {
       console.log('success');
-      queryClient.invalidateQueries({ queryKey: ['fetch-board-issues', project] });
+      // queryClient.invalidateQueries({ queryKey: ['fetch-board-issues', project] });
     },
     onError: () => {
       console.log('error');
@@ -80,19 +99,7 @@ export default function ProjectPage() {
   if (isLoading || !columns) return <div>Loading...</div>;
 
   const handleDrop = async (issue: SprintIssue, transitionId: string) => {
-    mutation.mutate({ issueId: issue.id, transitionId });
-    // try {
-    //   const result = await invoke('update_issue', {
-    //     token,
-    //     jiraInstance,
-    //     issueId: issue.id,
-    //     transitionId,
-    //   });
-    //
-    //   console.log('result', result);
-    // } catch (error) {
-    //   console.log('error', error);
-    // }
+    mutation.mutate({ issue, transitionId });
   };
 
   function handleAccepts(column: BoardColumnConfigColumn) {
