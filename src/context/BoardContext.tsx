@@ -56,7 +56,7 @@ export const BoardProvider = ({ children }: BoardProviderProps) => {
       return await invoke<Transition>('fetch_transitions', {
         token,
         jiraInstance,
-        issueId: '64879',
+        issueId,
       });
     } catch (error) {
       console.log('error', error);

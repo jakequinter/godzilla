@@ -3,7 +3,7 @@
 
 use commands::board_commands::{fetch_board, fetch_board_config};
 use commands::project_commands::fetch_projects;
-use commands::sprint_commands::{fetch_active_sprint, fetch_active_sprint_issues};
+use commands::sprint_commands::{fetch_active_sprint, fetch_active_sprint_issues, update_issue};
 use commands::transition_commands::fetch_transitions;
 use commands::user_commands::myself;
 
@@ -35,7 +35,8 @@ fn main() {
             fetch_board_config,
             fetch_projects,
             fetch_transitions,
-            myself
+            myself,
+            update_issue
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

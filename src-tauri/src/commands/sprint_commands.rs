@@ -1,4 +1,4 @@
-use crate::api::{get_request, parse_json, ApiResult};
+use crate::api::{get_request, parse_json, post_request, ApiResult};
 use crate::error::TauriError;
 use crate::models::sprint::{Issue, Sprint, SprintValue};
 use crate::models::url::Url;
@@ -43,4 +43,45 @@ pub async fn fetch_active_sprint_issues(
     })?;
 
     Ok(issues)
+}
+
+#[tauri::command]
+pub async fn update_issue(
+    token: &str,
+    jira_instance: String,
+    issue_id: String,
+    transition_id: String,
+) -> ApiResult<()> {
+    let body = format!(
+        r#"{{
+        "transition": {{
+        "id": "{}"
+    }}
+}}"#,
+        transition_id
+    );
+
+    let (status, data) = post_request(
+        Url::JiraCoreParamsUrl(jira_instance, format!("/issue/{issue_id}/transitions")),
+        token,
+        body,
+    )
+    .await?;
+
+    if status == 204 {
+        return Ok(());
+    }
+
+    if data.is_empty() {
+        // Handle scenarios where the response is empty or non-JSON
+        return Err(TauriError {
+            message: "No response received or response is empty".to_string(),
+        });
+    }
+
+    let _data: serde_json::Value = serde_json::from_str(&data).map_err(|error| TauriError {
+        message: format!("Failed to parse the JSON response: {}", error),
+    })?;
+
+    Ok(())
 }
